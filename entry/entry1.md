@@ -4,10 +4,19 @@
 サーバサイドやDevOpsを中心にフロント、インフラ、たまにはハードウェアまで広く薄く(?)やっています。  
 今回はGitFlowに沿ってReactアプリケーションを開発して、CircleCIでS3に自動デプロイ、CloudFrontでCDNにのせるという一連の流れについて書いてみたいと思います。  
 
-## 前提
+## 課題と方針
+創業初期は人数が少なく「それぞれがローカルで開発して動かしてみる -> ある程度まとまったら手動でビルドしてデプロイ」という開発フローで回っていましたが、より効率的な開発をしていくために開発環境、デプロイ環境を見直すことになりました。  
+まず、Git周りを整理するため「[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)」を導入することにしました。  
+GitFlowはその導入を支援するツールですが、ここでは便宜的に「A successful Git branching model」をGitFlowと呼ぶことにします。  
+そしてCIも導入することになりました。  
+いくつか選択肢はありましたが、手軽に導入できそうなCircleCIを選びました。
+
+## 前提と注意
+- AWSアカウントを持っている前提です。
 - 今回は独自ドメインの設定は行いません。
-- CircleCI用のIAMユーザーを作ってください。  
+- CircleCI用のIAMユーザーを作ってください。 
 権限はS3のフルアクセスとCloudFrontのフルアクセスを与えてください。
+- GitHubと連携したCircleCIアカウントを作ってください。
 
 ## 大まかな流れ
 1. [S3バケットを作る](#S3バケットを作成する)
@@ -58,10 +67,17 @@ git push
 次で設定していきます。
 
 ## CircleCIの設定を行う
+### CircleCIがデプロイできるようにする
 まずCircleCIのEnvironment VariablesにCircleCI用のIAMの
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`  
 
-を設定します。
+を設定します。  
+こうすることでCircleCI上でAWS CLIを用いてデプロイすることが可能になります。
+### 設定ファイルを編集する
+`.circleci/config.yml`を設定していきます。  
+```yml
+
+```
 
 ## GitFlowに沿って開発してみる
